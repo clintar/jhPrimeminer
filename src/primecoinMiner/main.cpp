@@ -1409,7 +1409,7 @@ int main(int argc, char **argv)
    commandlineInput.targetBTOverride = ceil(commandlineInput.targetBTOverride/2)*2;
    vPrimesAvg = ((commandlineInput.targetOverride+commandlineInput.targetBTOverride)/2);
    if (vPrimesAvg!=10) { vPrimesAdj = pow(1.3,((10-vPrimesAvg)*2)); } else { vPrimesAdj = 1; }
-   vPrimesMult = 41.0 * (1+(1.0*nSieveExtensions/commandlineInput.sieveSize / commandlineInput.L1CacheElements ));
+   vPrimesMult = 41.0 * (1+(1.0*2 ));
    nMaxPrimes = vPrimesMult * commandlineInput.initialPrimorial * vPrimesAdj;
 	nOverrideTargetValue = commandlineInput.targetOverride;
 	nOverrideBTTargetValue = commandlineInput.targetBTOverride;
