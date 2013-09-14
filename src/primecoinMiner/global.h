@@ -161,6 +161,7 @@ typedef struct
 	volatile float fBlockShareValue;
 	volatile float fTotalSubmittedShareValue;
 	volatile uint32_t chainCounter[4][13];
+	volatile uint32_t chainTotals[4];	
 	volatile uint32_t nWaveTime;
 	volatile unsigned int nWaveRound;
 	volatile uint32_t nTestTime;
@@ -269,6 +270,7 @@ typedef struct
 	uint32 port;
 	uint32 numThreads;
 	uint32 sieveSize;
+	uint32 maxPrimes;
 	uint32 sievePercentage;
 	uint32 roundSievePercentage;
 	uint32 sievePrimeLimit;	// how many primes should be sieved

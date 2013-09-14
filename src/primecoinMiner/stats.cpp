@@ -271,10 +271,6 @@ bool loadConfigJSON(std::string configdata,bool runtime){
 			commandlineInput.sieveSize = json_object_get_int(val);
 			if (runtime) nMaxSieveSize = commandlineInput.sieveSize;
 		}
-		if(memcmp(key, "sievepercentage", 16) == 0){
-			commandlineInput.sievePercentage = json_object_get_int(val);
-			if(runtime) nSievePercentage = commandlineInput.sievePercentage;
-		}
 		if(memcmp(key, "roundsievepercentage", 21) == 0){
 			commandlineInput.roundSievePercentage = json_object_get_int(val);
 			if(runtime) nRoundSievePercentage = commandlineInput.roundSievePercentage;
@@ -292,22 +288,6 @@ bool loadConfigJSON(std::string configdata,bool runtime){
 					bEnablenPrimorialMultiplierTuning = false;
 				}else{
 					bEnablenPrimorialMultiplierTuning = true;
-				}
-			}
-		}
-		if(memcmp(key, "cachetuning", 12) == 0){
-			commandlineInput.enableCacheTunning = json_object_get_boolean(val);
-			if (runtime && commandlineInput.enableCacheTunning){
-				if (!bOptimalL1SearchInProgress){
-					#ifdef _WIN32
-					CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)CacheAutoTuningWorkerThread, (LPVOID)commandlineInput.enableCacheTunning, 0, 0);
-					#else
-					uint32_t totalThreads = commandlineInput.numThreads + 2;
-					pthread_t threads[totalThreads];
-					const bool enabled = commandlineInput.enableCacheTunning;
-					pthread_create(&threads[commandlineInput.numThreads+1], NULL, CacheAutoTuningWorkerThread, (void *)&enabled);
-					#endif
-					std::cout << "Auto tunning for L1CacheElements size was started" << std::endl;
 				}
 			}
 		}
