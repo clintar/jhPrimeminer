@@ -146,7 +146,7 @@ static uint32_t ALWAYS_INLINE ctz( uint32_t x )
 int inline BN2_nz_num_unset_bits_from_lsb(const BIGNUM *a)
 {
 	sint32 bIdx = 0;
-	uint32 idx = 0;
+	unsigned long idx = 0;
 	sint32 maxIdx = a->top-1;
 	do 
 	{

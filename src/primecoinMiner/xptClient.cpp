@@ -2,7 +2,7 @@
 #ifndef _WIN32
 #include <errno.h>
 #endif
-
+#include <iostream>
 #ifdef _WIN32
 SOCKET xptClient_openConnection(char *IP, int Port)
 {
@@ -105,8 +105,6 @@ void xptClient_free(xptClient_t* xptClient)
  */
 void xptClient_sendWorkerLogin(xptClient_t* xptClient)
 {
-	uint32 usernameLength = std::min(127, fStrLen(xptClient->username));
-	uint32 passwordLength = std::min(127, fStrLen(xptClient->password));
 	// build the packet
 	bool sendError = false;
 	xptPacketbuffer_beginWritePacket(xptClient->sendBuffer, XPT_OPC_C_AUTH_REQ);
@@ -234,9 +232,7 @@ bool xptClient_process(xptClient_t* xptClient)
 		if( packetDataSize >= (1024*1024*2-4) )
 		{
 			// packets larger than 2mb are not allowed
-			if(!commandlineInput.silent){
 				std::cout << "xptServer_receiveData(): Packet exceeds 2mb size limit" << std::endl;
-			}
 			return false;
 		}
 		xptClient->recvSize = packetDataSize;

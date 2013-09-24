@@ -11,10 +11,10 @@ typedef __int32           sint32;
 typedef unsigned __int32  uint32;
 typedef __int16           sint16;
 typedef unsigned __int16  uint16;
-typedef __int8            sint8;
-typedef unsigned __int8   uint8;
+//typedef __int8            sint8;
+//typedef unsigned __int8   uint8;
 
-typedef __int8 int8_t;
+//typedef __int8 int8_t;
 typedef unsigned __int8 uint8_t;
 typedef __int16 int16_t;
 typedef unsigned __int16 uint16_t;
@@ -22,6 +22,9 @@ typedef __int32 int32_t;
 typedef unsigned __int32 uint32_t;
 typedef __int64 int64_t;
 typedef unsigned __int64 uint64_t;
+#include "mpirxx.h"
+#include "mpir.h"
+#include <iostream>
 
 #else
 #include <sys/types.h>
@@ -38,6 +41,12 @@ typedef unsigned __int64 uint64_t;
 
 typedef uint8_t BYTE;
 typedef uint32_t DWORD;
+#include <cstdlib>
+#include <cstdio>
+#include <iostream>
+
+#include <gmpxx.h>
+#include <gmp.h>
 #endif
 #include"jhlib/JHLib.h"
 
@@ -76,15 +85,7 @@ int BN2_uadd(BIGNUM *r, const BIGNUM *a, const BIGNUM *b);
 
 #include"prime.h"
 #include"jsonrpc.h"
-#include"stats.h"
 
-#ifdef _WIN32
-#include "mpirxx.h"
-#include "mpir.h"
-#else
-#include <gmpxx.h>
-#include <gmp.h>
-#endif
 #include"xptServer.h"
 #include"xptClient.h"
 
@@ -161,7 +162,6 @@ typedef struct
 	volatile float fBlockShareValue;
 	volatile float fTotalSubmittedShareValue;
 	volatile uint32_t chainCounter[4][13];
-	volatile uint32_t chainTotals[4];	
 	volatile uint32_t nWaveTime;
 	volatile unsigned int nWaveRound;
 	volatile uint32_t nTestTime;
@@ -191,15 +191,10 @@ uint64 blockStartTime;
 	bool shareFound;
 	bool shareRejected;
 	volatile unsigned int nL1CacheElements;
-	sint32 lastShareThreadIndex;
-	float lastShareDiff;
-	unsigned int lastShareType;
-
 
 }primeStats_t;
 
 extern primeStats_t primeStats;
-
 
 typedef struct  
 {
@@ -228,83 +223,13 @@ void primecoinBlock_generateHeaderHash(primecoinBlock_t* primecoinBlock, uint8 h
 uint32 _swapEndianessU32(uint32 v);
 uint32 jhMiner_getCurrentWorkBlockHeight(sint32 threadIndex);
 
-
-typedef struct  
-{
-	bool dataIsValid;
-	uint8 data[128];
-	uint32 dataHash; // used to detect work data changes
-	uint8 serverData[32]; // contains data from the server 
-}workDataEntry_t;
-
-typedef struct  
-{
-#ifdef _WIN32
-	CRITICAL_SECTION cs;
-#else
-  pthread_mutex_t cs;
-#endif
-	uint8 protocolMode;
-	// xpm
-	workDataEntry_t workEntry[128]; // work data for each thread (up to 128)
-	// x.pushthrough
-	xptClient_t* xptClient;
-}workData_t;
-
-extern workData_t workData;
-
-
-#ifdef _WIN32
-static void CacheAutoTuningWorkerThread(bool bEnabled);
-#else
-void *CacheAutoTuningWorkerThread(void * arg);
-#endif
-
 void BitcoinMiner(primecoinBlock_t* primecoinBlock, CSieveOfEratosthenes*& psieve, sint32 threadIndex);
-
-typedef struct
-{
-	char* workername;
-	char* workerpass;
-	char* host;
-	uint32 port;
-	uint32 numThreads;
-	uint32 sieveSize;
-	uint32 maxPrimes;
-	uint32 sievePercentage;
-	uint32 roundSievePercentage;
-	uint32 sievePrimeLimit;	// how many primes should be sieved
-	unsigned int L1CacheElements;
-	unsigned int primorialMultiplier;
-	bool enableCacheTunning;
-	uint32 targetOverride;
-	uint32 targetBTOverride;
-	uint32 initialPrimorial;
-	uint32 sieveExtensions;
-	uint32 centralServerPort;
-	char* centralServer;
-	char* csApiKey;
-	int64_t csUUID;
-	char* configfile;
-	bool printDebug;
-	bool quiet;
-	bool silent;
-	bool csEnabled;
-	bool weakSSL;
-	bool csStaticUUID;
-	uint32 nullShareTimeout;
-}commandlineInput_t;
-
-extern commandlineInput_t commandlineInput;
-extern commandlineInput_t OldCommandlineInput;
-extern bool bEnablenPrimorialMultiplierTuning;
-extern bool bOptimalL1SearchInProgress;
-extern unsigned int nRoundSievePercentage;
 
 // direct access to share counters
 extern volatile int total_shares;
 extern volatile int valid_shares;
 extern std::set<mpz_class> multiplierSet;
+extern bool appQuitSignal;
 
 #ifdef _WIN32
 extern __declspec( thread ) BN_CTX* pctx;
@@ -324,7 +249,3 @@ static inline uint32_t le32dec(const void *pp)
 	    ((uint32_t)(p[2]) << 16) + ((uint32_t)(p[3]) << 24));
 }
 #endif
-
-
-
-int getNumThreads(void);
