@@ -479,7 +479,7 @@ int esprintf_X(char *out, unsigned int value, int padRight, int padZero, int wid
 #ifdef _WIN64
 void __cdecl _esprintf(char *out, char *format, uint64 *param, unsigned int *lengthOut)
 #elif defined (_WIN32)
-void __cdecl _esprintf(char *out, char *format, unsigned int *param, unsigned int *lengthOut)
+void __cdecl _esprintf(char *out, char *format, unsigned int *lengthOut)
 #else // gcc
 void __attribute__((cdecl)) _esprintf(char *out, char *format, unsigned int *lengthOut) 
 #endif
