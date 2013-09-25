@@ -31,8 +31,7 @@ static const unsigned int nDefaultSieveExtensionsTestnet = 4;
 extern unsigned int nSieveExtensions;
 
 extern unsigned int nMaxSieveSize;
-extern unsigned int vPrimesSize;
-extern unsigned int nMaxPrimes;
+extern unsigned int nSievePercentage;
 extern bool nPrintDebugMessages;
 extern unsigned long nOverrideTargetValue;
 extern unsigned int nOverrideBTTargetValue;
@@ -198,10 +197,11 @@ class CSieveOfEratosthenes
    void ProcessMultiplier(sieve_word_t *vfComposites, const unsigned int nMinMultiplier, const unsigned int nMaxMultiplier, const std::vector<unsigned int>& vPrimes, unsigned int *vMultipliers, unsigned int nLayerSeq);
 
 public:
-   CSieveOfEratosthenes(unsigned int nSieveSize, double nSievePercentage, unsigned int nSieveExtensions, unsigned int nTargetChainLength, unsigned int nTargetBTLength, mpz_class& mpzHash, mpz_class& mpzFixedMultiplier)
+   CSieveOfEratosthenes(unsigned int nSieveSize, unsigned int nSievePercentage, unsigned int nSieveExtensions, unsigned int nTargetChainLength, unsigned int nTargetBTLength, mpz_class& mpzHash, mpz_class& mpzFixedMultiplier)
     {
         this->nSieveSize = nSieveSize;
 		this->nAllocatedSieveSize = nSieveSize;
+      this->nSievePercentage = nSievePercentage;
       this->nSieveExtensions = nSieveExtensions;
         this->mpzHash = mpzHash;
         this->mpzFixedMultiplier = mpzFixedMultiplier;
@@ -209,7 +209,7 @@ public:
       this->nBTChainLength = nTargetBTLength;
       this->nSieveLayers = nChainLength + nSieveExtensions;
       this->nTotalPrimes = vPrimes.size();
-      this->nPrimes = (uint64)nMaxPrimes;
+      this->nPrimes = (uint64)nTotalPrimes * nSievePercentage / 100;
       this->nPrimeSeq = nMinPrimeSeq;
       this->nCandidateCount = 0;
       this->nCandidateMultiplier = 0;
@@ -269,9 +269,10 @@ public:
     }
 
 
-   void Init(unsigned int nSieveSize, unsigned int nMaxPrimes, unsigned int nSieveExtensions, unsigned int nTargetChainLength, unsigned int nTargetBTLength, mpz_class& mpzHash, mpz_class& mpzFixedMultiplier)
+   void Init(unsigned int nSieveSize, unsigned int nSievePercentage, unsigned int nSieveExtensions, unsigned int nTargetChainLength, unsigned int nTargetBTLength, mpz_class& mpzHash, mpz_class& mpzFixedMultiplier)
     {
         this->nSieveSize = nSieveSize;
+      this->nSievePercentage = nSievePercentage;
       this->nSieveExtensions = nSieveExtensions;
         this->mpzHash = mpzHash;
         this->mpzFixedMultiplier = mpzFixedMultiplier;
@@ -279,7 +280,7 @@ public:
       this->nBTChainLength = nTargetBTLength;
       this->nSieveLayers = nChainLength + nSieveExtensions;
       this->nTotalPrimes = vPrimes.size();
-      this->nPrimes = (uint64)nMaxPrimes;
+      this->nPrimes = (uint64)nTotalPrimes * nSievePercentage / 100;
       this->nPrimeSeq = nMinPrimeSeq;
       this->nCandidateCount = 0;
       this->nCandidateMultiplier = 0;
