@@ -487,6 +487,24 @@ void __attribute__((cdecl)) _esprintf(char *out, char *format, unsigned int *len
 		if( lengthOut )
 		*lengthOut = 0;
 
+}
+
+void esprintf(char *out, char *format, ...)
+{
+	// use some dirty trick to access varying arguments
+	//unsigned int *param = (unsigned int*)_ADDRESSOF(format);
+	//param++; // skip first parameter
+	//_esprintf(out, format, param, NULL);
+	#ifdef _WIN64
+		uint64 *param = (uint64*)_ADDRESSOF(format);
+		param++; // skip first parameter
+		unsigned int formattedLength = 0;
+		_esprintf(out, format, param, &formattedLength);
+#endif
+	va_list arguments;
+	va_start ( arguments, format );           // Initializing arguments to store all values after format
+
+	unsigned int *lengthOut = 0;
 	//Do parsing
 	char *p = format;
 	char *o = out;
@@ -727,6 +745,7 @@ void esprintf(char *out, char *format, ...)
 		param++; // skip first parameter
 		unsigned int formattedLength = 0;
 		_esprintf(out, format, param, &formattedLength);
+}
 #elif defined (_WIN32)
 void esprintf(char *out, char *format, ...)
 {
@@ -735,6 +754,7 @@ void esprintf(char *out, char *format, ...)
 		unsigned int formattedLength = 0;
 		_esprintf(out, format, param, &formattedLength);
 	
-#endif
+
 
 }
+#endif
