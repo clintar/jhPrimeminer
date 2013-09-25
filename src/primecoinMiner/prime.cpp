@@ -964,7 +964,7 @@ bool MineProbablePrimeChain(CSieveOfEratosthenes*& psieve, primecoinBlock_t* blo
          // Update Stats
          primeStats.chainCounter[0][std::min(shareDifficultyMajor,12)]++;
          primeStats.chainCounter[nCandidateType][std::min(shareDifficultyMajor,12)]++;
-		 primeStats.nChainHit++;
+         primeStats.nChainHit++;
 
          block->mpzPrimeChainMultiplier = mpzFixedMultiplier * nTriedMultiplier;
 
@@ -1656,8 +1656,7 @@ bool CSieveOfEratosthenes::Weave()
                   vfCompositeBiTwin[nWord] |= vfCompositeLayerCC1[nWord] | vfCompositeLayerCC2[nWord];
                }
             }
-            else if (nLayerSeq < nBiTwinCC2Layers)
-			//if (nLayerSeq > 3 && nLayerSeq < 7)
+            else if (nLayerSeq < nBiTwinCC1Layers)
             {
                for (unsigned int nWord = nMinWord; nWord < nMaxWord; nWord++)
                {
