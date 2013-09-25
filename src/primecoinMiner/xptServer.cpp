@@ -163,7 +163,7 @@ void xptServer_sendNewBlockToAll(xptServer_t* xptServer, uint32 coinTypeIndex)
 		payloadCount += xptServerClient->payloadNum;
 	}
 	uint64 time2 = getTimeMilliseconds() - time1;
-	printf("Send %d blocks to %d workers in %ums\n", payloadCount, workerCount, time2);
+	std::cout << "Send " << payloadCount << " blocks to " << workerCount << " workers in " << time2 << "ms" << std::endl;
 }
 
 /*

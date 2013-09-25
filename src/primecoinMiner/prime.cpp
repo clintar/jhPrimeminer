@@ -56,7 +56,6 @@ void GeneratePrimeTable(unsigned int nSieveSize)
    for (unsigned int n = 2; n < nPrimeTableLimit; n++)
       if (!vfComposite[n])
          vPrimes.push_back(n);
-	if(!commandlineInput.silent && !commandlineInput.quiet)
 	   std::cout << "GeneratePrimeTable() : prime table [1, " << nPrimeTableLimit << "] generated with " << vPrimes.size() << " primes" << std::endl;
    vPrimesSize = vPrimes.size();  
 }
@@ -546,15 +545,13 @@ bool TargetSetFractionalDifficulty(uint64 nFractionalDifficulty, unsigned int& n
    return true;
 }
 
+#ifdef _WIN32
 std::string TargetToString(unsigned int nBits)
 {
-#ifdef _WIN32
    __debugbreak(); // return strprintf("%02x.%06x", TargetGetLength(nBits), TargetGetFractional(nBits));
-#else
-  raise(SIGTRAP); // not sure if this is really portable
-#endif
    return NULL; // todo
 }
+#endif
 
 unsigned int TargetFromInt(unsigned int nLength)
 {
@@ -1003,22 +1000,14 @@ bool MineProbablePrimeChain(CSieveOfEratosthenes*& psieve, primecoinBlock_t* blo
          strftime (sNow, 80, "%x-%X",timeinfo);
 
 		float shareDiff = GetChainDifficulty(nProbableChainLength);
-		if(!commandlineInput.silent)
-		printf("%s - SHARE FOUND! - (Th#:%2u) - DIFF:%8f - TYPE:%u", sNow, threadIndex, shareDiff, nCandidateType);
-
-		primeStats.lastShareThreadIndex = threadIndex;
-		primeStats.lastShareDiff = shareDiff;
-		primeStats.lastShareType = nCandidateType;
-
-
-
+	        std::cout << sNow << " - SHARE FOUND! - (Th#:" << threadIndex << ") - DIFF:" << shareDiff << " - TYPE:" << nCandidateType << std::endl;
          if (nPrintDebugMessages)
          {
             printf("\nHashNum        : %s ", mpzHash.get_str(16).c_str());
             printf("\nFixedMultiplier: %s ", mpzFixedMultiplier.get_str(16).c_str());
             printf("\nHashMultiplier : %u ", nTriedMultiplier);
-		    printf("\n");
          }
+		    printf("\n");
 
          // submit this share
          multiplierSet.insert(block->mpzPrimeChainMultiplier);
@@ -1252,7 +1241,7 @@ bool CSieveOfEratosthenes::Weave()
       {
          // Combine multiple primes to produce a big divisor
          unsigned int nPrimeCombined = 1;
-         while (nPrimeCombined < UINT_MAX / vPrimes[nCombinedEndSeq]) // Not likely to occur// && nCombinedEndSeq < nTotalPrimesLessOne )
+         while (nPrimeCombined < UINT_MAX / vPrimes[nCombinedEndSeq]  )
          {
             nPrimeCombined *= vPrimes[nCombinedEndSeq];
             nCombinedEndSeq++;

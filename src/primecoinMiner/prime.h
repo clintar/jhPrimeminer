@@ -141,7 +141,7 @@ class CSieveOfEratosthenes
 {
    static const int nMinPrimeSeq = 4; // this is Prime number 11, the first prime with unknown factor status.
     unsigned int nSieveSize; // size of the sieve
-   unsigned int nMaxPrimes; //weave up to max primes
+   unsigned int nSievePercentage; // weave up to a percentage of primes
     unsigned int nSieveExtensions; // extend the sieve a given number of times
 	unsigned int nAllocatedSieveSize;
     mpz_class mpzHash; // hash of the block header
