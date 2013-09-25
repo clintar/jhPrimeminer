@@ -733,28 +733,3 @@ void esprintf(char *out, char *format, ...)
 	if( lengthOut )
 		*lengthOut = (unsigned int)(o-out);
 }
-#if defined (_WIN64)
-void esprintf(char *out, char *format, ...)
-{
-	// use some dirty trick to access varying arguments
-	//unsigned int *param = (unsigned int*)_ADDRESSOF(format);
-	//param++; // skip first parameter
-	//_esprintf(out, format, param, NULL);
-
-		uint64 *param = (uint64*)_ADDRESSOF(format);
-		param++; // skip first parameter
-		unsigned int formattedLength = 0;
-		_esprintf(out, format, param, &formattedLength);
-}
-#elif defined (_WIN32)
-void esprintf(char *out, char *format, ...)
-{
-		unsigned int *param = (unsigned int*)_ADDRESSOF(format);
-		param++; // skip first parameter
-		unsigned int formattedLength = 0;
-		_esprintf(out, format, param, &formattedLength);
-	
-
-
-}
-#endif
