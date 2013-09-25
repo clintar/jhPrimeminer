@@ -500,7 +500,7 @@ void esprintf(char *out, char *format, ...)
 		param++; // skip first parameter
 		unsigned int formattedLength = 0;
 		_esprintf(out, format, param, &formattedLength);
-#else
+#elif defined(_WIN32)
 	unsigned int *param = (unsigned int*)_ADDRESSOF(format);
 		param++; // skip first parameter
 		unsigned int formattedLength = 0;
