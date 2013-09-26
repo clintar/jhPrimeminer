@@ -8,7 +8,7 @@ bool MineProbablePrimeChain(CSieveOfEratosthenes*& psieve, primecoinBlock_t* blo
 
 std::set<mpz_class> multiplierSet;
 
-void BitcoinMiner(primecoinBlock_t* primecoinBlock, CSieveOfEratosthenes*& psieve, sint32 threadIndex)
+bool BitcoinMiner(primecoinBlock_t* primecoinBlock, CSieveOfEratosthenes*& psieve, sint32 threadIndex)
 {
 	//printf("PrimecoinMiner started\n");
 	//SetThreadPriority(THREAD_PRIORITY_LOWEST);
@@ -132,7 +132,12 @@ void BitcoinMiner(primecoinBlock_t* primecoinBlock, CSieveOfEratosthenes*& psiev
 		// Primecoin: mine for prime chain
 		unsigned int nProbableChainLength;
 		MineProbablePrimeChain(psieve, primecoinBlock, mpzFixedMultiplier, fNewBlock, nTriedMultiplier, nProbableChainLength, nTests, nPrimesHit, threadIndex, mpzHash, nPrimorialMultiplier);
-
+		threadHearthBeat[threadIndex] = GetTickCount();
+		if (appQuitSignal)
+		{
+			printf( "Shutting down mining thread %d.\n", threadIndex);
+			return false;
+		}
 		//{
 		//	// do nothing here, share is already submitted in MineProbablePrimeChain()
 		//	//primecoinBlock->nonce += 0x00010000;
@@ -155,4 +160,5 @@ void BitcoinMiner(primecoinBlock_t* primecoinBlock, CSieveOfEratosthenes*& psiev
 		loopCount++;
 	}
 	
+	return true;
 }
