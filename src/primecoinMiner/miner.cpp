@@ -132,7 +132,9 @@ bool BitcoinMiner(primecoinBlock_t* primecoinBlock, CSieveOfEratosthenes*& psiev
 		// Primecoin: mine for prime chain
 		unsigned int nProbableChainLength;
 		MineProbablePrimeChain(psieve, primecoinBlock, mpzFixedMultiplier, fNewBlock, nTriedMultiplier, nProbableChainLength, nTests, nPrimesHit, threadIndex, mpzHash, nPrimorialMultiplier);
-		threadHearthBeat[threadIndex] = GetTickCount();
+#ifdef _WIN32
+		threadHearthBeat[threadIndex] = getTimeMilliseconds();
+#endif
 		if (appQuitSignal)
 		{
 			printf( "Shutting down mining thread %d.\n", threadIndex);
