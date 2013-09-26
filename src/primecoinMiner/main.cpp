@@ -978,7 +978,7 @@ bool fIncrementPrimorial = true;
 unsigned int nRoundSievePercentage;
 bool bOptimalL1SearchInProgress = false;
 
-
+#ifdef _WIN32
 static void CacheAutoTuningWorkerThread(bool bEnabled)
 {
 
@@ -1046,11 +1046,11 @@ static void CacheAutoTuningWorkerThread(bool bEnabled)
 
    }
 }
-
+#endif
 
 bool bEnablenPrimorialMultiplierTuning = true;
 
-
+#ifdef _WIN32
 static void RoundSieveAutoTuningWorkerThread(bool bEnabled)
 {
    __try
@@ -1106,7 +1106,7 @@ static void RoundSieveAutoTuningWorkerThread(bool bEnabled)
    }
 
 }
-
+#endif
 
 void PrintCurrentSettings()
 {
