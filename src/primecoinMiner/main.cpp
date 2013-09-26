@@ -895,8 +895,8 @@ static void watchdog_thread(std::map<DWORD, HANDLE> threadMap)
 static void *watchdog_thread(void *)
 #endif
 {
-#ifdef _WIN32
-	   	uint32 maxIdelTime = 10 * 1000;
+#if defined (_WIN32) || defined (_WIN64)
+	   	uint32 maxIdelTime = 30 * 1000;
 		std::map <DWORD, HANDLE> :: const_iterator thMap_Iter;
 #endif
 	   while(true)
@@ -941,7 +941,7 @@ static void *watchdog_thread(void *)
 	//on linux just exit
 	exit(-2000);
 #endif
-	Sleep( 10*1000);
+	Sleep( 1*1000);
 	}
 }
 
@@ -978,7 +978,7 @@ bool fIncrementPrimorial = true;
 unsigned int nRoundSievePercentage;
 bool bOptimalL1SearchInProgress = false;
 
-#ifdef _WIN32
+
 static void CacheAutoTuningWorkerThread(bool bEnabled)
 {
 
@@ -1046,11 +1046,11 @@ static void CacheAutoTuningWorkerThread(bool bEnabled)
 
    }
 }
-#endif
+
 
 bool bEnablenPrimorialMultiplierTuning = true;
 
-#ifdef _WIN32
+
 static void RoundSieveAutoTuningWorkerThread(bool bEnabled)
 {
    __try
@@ -1106,7 +1106,6 @@ static void RoundSieveAutoTuningWorkerThread(bool bEnabled)
    }
 
 }
-#endif
 
 
 void PrintCurrentSettings()
@@ -1301,8 +1300,7 @@ int jhMiner_main_getworkMode()
          double primeDifficulty = (double)bestDifficulty / (double)0x1000000;
          if( workData.workEntry[0].dataIsValid )
          {
-	if(primeStats.bestPrimeChainDifficultySinceLaunch < primeDifficulty)
-            primeStats.bestPrimeChainDifficultySinceLaunch = primeDifficulty;
+            primeStats.bestPrimeChainDifficultySinceLaunch = std::max((float)primeStats.bestPrimeChainDifficultySinceLaunch, (float)primeDifficulty);
             printf("primes/s: %d best difficulty: %f record: %f\n", (sint32)primesPerSecond, (float)primeDifficulty, (float)primeStats.bestPrimeChainDifficultySinceLaunch);
          }
       }		
@@ -1515,7 +1513,7 @@ int main(int argc, char **argv)
 	commandlineInput.primorialMultiplier = 0; // for default 0 we will switch auto tune on
 	commandlineInput.targetOverride = 9;
 	commandlineInput.targetBTOverride = 10;
-    commandlineInput.initialPrimorial = 41;
+    commandlineInput.initialPrimorial = 61;
 	commandlineInput.printDebug = 0;
 	commandlineInput.sieveExtensions = 7;
 
