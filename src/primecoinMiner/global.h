@@ -24,8 +24,6 @@ typedef __int64 int64_t;
 typedef unsigned __int64 uint64_t;
 #include "mpirxx.h"
 #include "mpir.h"
-#include <iostream>
-
 #else
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -43,19 +41,19 @@ typedef uint8_t BYTE;
 typedef uint32_t DWORD;
 #include <cstdlib>
 #include <cstdio>
-#include <iostream>
-
 #include <gmpxx.h>
 #include <gmp.h>
 #endif
+#include <iostream>
+
+
 #include"jhlib/JHLib.h"
 
 #include<stdio.h>
 #include<time.h>
 #include<set>
-#include<stdint.h>
-#include <iomanip>
 
+#include <iomanip>
 #include"sha256.h"
 #include"ripemd160.h"
 //#include"bignum_custom.h"
@@ -86,6 +84,7 @@ int BN2_uadd(BIGNUM *r, const BIGNUM *a, const BIGNUM *b);
 #include"prime.h"
 #include"jsonrpc.h"
 
+#include<stdint.h>
 #include"xptServer.h"
 #include"xptClient.h"
 
@@ -186,8 +185,9 @@ typedef struct
 	volatile uint32 bestPrimeChainDifficulty;
 	volatile double bestPrimeChainDifficultySinceLaunch;
   uint64 primeLastUpdate;
+  uint64 blockStartTime;
   uint64 startTime;
-uint64 blockStartTime;
+  
 	bool shareFound;
 	bool shareRejected;
 	volatile unsigned int nL1CacheElements;

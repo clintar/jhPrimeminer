@@ -490,7 +490,8 @@ uint32_t threadIndex = static_cast<uint32_t>((uintptr_t)arg);
       // ypool uses a special encrypted serverData value to speedup identification of merkleroot and share data
       memcpy(&primecoinBlock.serverData, serverData, 32);
       // start mining
-      BitcoinMiner(&primecoinBlock, psieve, threadIndex);
+      if (!BitcoinMiner(&primecoinBlock, psieve, threadIndex))
+         break;
       primecoinBlock.mpzPrimeChainMultiplier = 0;
    }
 	if( psieve )
@@ -544,7 +545,8 @@ uint32_t threadIndex = static_cast<uint32_t>((uintptr_t)arg);
 		memcpy(&primecoinBlock.serverData, serverData, 32);
 		// start mining
 		//uint32 time1 = GetTickCount();
-      	BitcoinMiner(&primecoinBlock, psieve, threadIndex);
+      if (!BitcoinMiner(&primecoinBlock, psieve, threadIndex))
+         break;
 		//printf("Mining stopped after %dms\n", GetTickCount()-time1);
 		primecoinBlock.mpzPrimeChainMultiplier = 0;
 	}
@@ -893,12 +895,13 @@ DWORD * threadHearthBeat;
 static void watchdog_thread(std::map<DWORD, HANDLE> threadMap)
 #else
 static void *watchdog_thread(void *)
+
 #endif
 {
 #if defined (_WIN32) || defined (_WIN64)
-	   	uint32 maxIdelTime = 30 * 1000;
 		std::map <DWORD, HANDLE> :: const_iterator thMap_Iter;
 #endif
+	   	uint32 maxIdelTime = 30 * 1000;
 	   while(true)
 		{
       if ((workData.protocolMode == MINER_PROTOCOL_XPUSHTHROUGH) && (!IsXptClientConnected()))
