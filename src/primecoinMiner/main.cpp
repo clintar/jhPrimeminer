@@ -783,7 +783,7 @@ void jhMiner_parseCommandline(int argc, char **argv)
             cout << "Missing flag after -tune option" << endl;
 				exit(0);
 			}
-			if (memcmp(argument, "true", 5) == 0 ||  memcmp(argument, "1", 2) == 0)
+			if (memcmp(argv[cIdx], "true", 5) == 0 ||  atoi(argv[cIdx]) == 1)
 				commandlineInput.enableCacheTunning = true;
 
 			cIdx++;
@@ -981,13 +981,22 @@ bool fIncrementPrimorial = true;
 unsigned int nRoundSievePercentage;
 bool bOptimalL1SearchInProgress = false;
 
-
+#ifdef _WIN32
 static void CacheAutoTuningWorkerThread(bool bEnabled)
+#else
+void *CacheAutoTuningWorkerThread(void * arg)
+#endif
 {
+#ifndef _WIN32
+  bool bEnabled = (bool) arg;
+#endif
 
    if (bOptimalL1SearchInProgress || !bEnabled)
-      return;
-
+#ifdef _WIN32
+	  return;
+#else
+      return 0;
+#endif
    bOptimalL1SearchInProgress = true;
 
    DWORD startTime = getTimeMilliseconds();	
@@ -1052,8 +1061,11 @@ static void CacheAutoTuningWorkerThread(bool bEnabled)
 
 
 bool bEnablenPrimorialMultiplierTuning = true;
-
+#ifdef _WIN32
 static void RoundSieveAutoTuningWorkerThread(bool bEnabled)
+#else
+void *RoundSieveAutoTuningWorkerThread(void * bEnabled)
+#endif
 {
 #ifdef _WIN32
    __try
@@ -1063,7 +1075,7 @@ static void RoundSieveAutoTuningWorkerThread(bool bEnabled)
       // Auto Tuning for nPrimorialMultiplier
       int nSampleSeconds = 15;
 
-      while (true)
+      while (true && !appQuitSignal)
       {
          primeStats.nWaveTime = 0;
          primeStats.nWaveRound = 0;
@@ -1072,8 +1084,11 @@ static void RoundSieveAutoTuningWorkerThread(bool bEnabled)
          Sleep(nSampleSeconds*1000);
 
          if (appQuitSignal)
+#ifdef _WIN32
             return;
-
+#else
+		 return 0;
+#endif
          if (bOptimalL1SearchInProgress || !bEnablenPrimorialMultiplierTuning || !IsXptClientConnected())
             continue;
 
@@ -1259,12 +1274,13 @@ int jhMiner_main_getworkMode()
    }
 
 #else
-	uint32_t totalThreads = commandlineInput.numThreads;
-			totalThreads = commandlineInput.numThreads + 1;
+	uint32_t totalThreads = commandlineInput.numThreads + 2;
 
   pthread_t threads[totalThreads];
   // start the Auto Tuning thread
-  
+	
+    pthread_create(&threads[commandlineInput.numThreads+1], NULL, CacheAutoTuningWorkerThread, (void *)(bool)commandlineInput.enableCacheTunning);
+  pthread_create(&threads[commandlineInput.numThreads+2], NULL, RoundSieveAutoTuningWorkerThread, NULL);
   pthread_create(&threads[commandlineInput.numThreads], NULL, input_thread, NULL);
 	pthread_attr_t threadAttr;
   pthread_attr_init(&threadAttr);
@@ -1347,12 +1363,13 @@ int jhMiner_main_xptMode()
  CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)watchdog_thread, (LPVOID)&threadMap, 0, 0);
 
 #else
-	uint32_t totalThreads = commandlineInput.numThreads;
-			totalThreads = commandlineInput.numThreads + 1;
+	uint32_t totalThreads = commandlineInput.numThreads + 2;
 
   pthread_t threads[totalThreads];
   // start the Auto Tuning thread
-  
+
+  pthread_create(&threads[commandlineInput.numThreads+1], NULL, CacheAutoTuningWorkerThread, (void *)(bool)commandlineInput.enableCacheTunning);
+  pthread_create(&threads[commandlineInput.numThreads+2], NULL, RoundSieveAutoTuningWorkerThread, NULL);
   pthread_create(&threads[commandlineInput.numThreads], NULL, input_thread, NULL);
 	pthread_attr_t threadAttr;
   pthread_attr_init(&threadAttr);
