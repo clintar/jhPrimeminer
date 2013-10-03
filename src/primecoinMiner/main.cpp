@@ -544,10 +544,10 @@ uint32_t threadIndex = static_cast<uint32_t>((uintptr_t)arg);
 		// ypool uses a special encrypted serverData value to speedup identification of merkleroot and share data
 		memcpy(&primecoinBlock.serverData, serverData, 32);
 		// start mining
-		//uint32 time1 = GetTickCount();
+		//uint32 time1 = getTimeMilliseconds();
       if (!BitcoinMiner(&primecoinBlock, psieve, threadIndex))
          break;
-		//printf("Mining stopped after %dms\n", GetTickCount()-time1);
+		//printf("Mining stopped after %dms\n", getTimeMilliseconds()-time1);
 		primecoinBlock.mpzPrimeChainMultiplier = 0;
 	}
 	if( psieve )
@@ -981,7 +981,7 @@ bool fIncrementPrimorial = true;
 unsigned int nRoundSievePercentage;
 bool bOptimalL1SearchInProgress = false;
 
-#ifdef _WIN32
+
 static void CacheAutoTuningWorkerThread(bool bEnabled)
 {
 
@@ -990,7 +990,7 @@ static void CacheAutoTuningWorkerThread(bool bEnabled)
 
    bOptimalL1SearchInProgress = true;
 
-   DWORD startTime = GetTickCount();	
+   DWORD startTime = getTimeMilliseconds();	
 	unsigned int nL1CacheElementsStart = 64000;
 	unsigned int nL1CacheElementsMax   = 2560000;
 	unsigned int nL1CacheElementsIncrement = 64000;
@@ -1049,16 +1049,16 @@ static void CacheAutoTuningWorkerThread(bool bEnabled)
 
    }
 }
-#endif
+
 
 bool bEnablenPrimorialMultiplierTuning = true;
 
-#ifdef _WIN32
 static void RoundSieveAutoTuningWorkerThread(bool bEnabled)
 {
+#ifdef _WIN32
    __try
    {
-
+#endif
 
       // Auto Tuning for nPrimorialMultiplier
       int nSampleSeconds = 15;
@@ -1089,7 +1089,7 @@ static void RoundSieveAutoTuningWorkerThread(bool bEnabled)
 
          if (ratio > nRoundSievePercentage + 5)
          {
-            if (!PrimeTableGetNextPrime((unsigned int)  primeStats.nPrimorialMultiplier))
+            if (!PrimeTableGetNextPrime((unsigned int &)  primeStats.nPrimorialMultiplier))
                error("PrimecoinMiner() : primorial increment overflow");
             printf( "Sieve/Test ratio: %.01f / %.01f %%  - New PrimorialMultiplier: %u\n", ratio, 100.0 - ratio,  primeStats.nPrimorialMultiplier);
          }
@@ -1097,19 +1097,19 @@ static void RoundSieveAutoTuningWorkerThread(bool bEnabled)
          {
             if ( primeStats.nPrimorialMultiplier > 2)
             {
-               if (!PrimeTableGetPreviousPrime((unsigned int) primeStats.nPrimorialMultiplier))
+               if (!PrimeTableGetPreviousPrime((unsigned int &) primeStats.nPrimorialMultiplier))
                   error("PrimecoinMiner() : primorial decrement overflow");
                printf( "Sieve/Test ratio: %.01f / %.01f %%  - New PrimorialMultiplier: %u\n", ratio, 100.0 - ratio,  primeStats.nPrimorialMultiplier);
             }
          }
       }
+#ifdef _WIN32
    }
    __except(EXCEPTION_EXECUTE_HANDLER)
    {
    }
-
-}
 #endif
+}
 
 void PrintCurrentSettings()
 {
@@ -1255,7 +1255,7 @@ int jhMiner_main_getworkMode()
       HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)jhMiner_workerThread_getwork, (LPVOID)threadIdx, 0, 0);
       SetThreadPriority(hThread, THREAD_PRIORITY_BELOW_NORMAL);
       threadMap.insert(thMapKeyVal(threadIdx,hThread));
-      threadHearthBeat[threadIdx] = GetTickCount();
+      threadHearthBeat[threadIdx] = getTimeMilliseconds();
    }
 
 #else
