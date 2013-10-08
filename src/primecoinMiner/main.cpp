@@ -1238,6 +1238,7 @@ static struct termios oldt, newt;
 			std::cout << "Round Sieve Percentage: " << nRoundSievePercentage << "%" << std::endl;
 			break;
 		}
+		Sleep(20);
 	}
 #ifdef _WIN32
 	return;
