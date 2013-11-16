@@ -1524,7 +1524,7 @@ int jhMiner_main_xptMode()
 int main(int argc, char **argv)
 {
 	// setup some default values
-	commandlineInput.port = 10034;
+	commandlineInput.port = 8081;
 	commandlineInput.numThreads = std::max(getNumThreads(), 1);
 	commandlineInput.sieveSize = 1000000; // default maxSieveSize
    commandlineInput.sievePercentage = 10; // default 
@@ -1678,9 +1678,9 @@ int main(int argc, char **argv)
 	std::cout << "Username: " << jsonRequestTarget.authUser << std::endl;
 	std::cout << "Password: " << jsonRequestTarget.authPass << std::endl;
 	// decide protocol
-   if( commandlineInput.port == 10034 )
+   if( commandlineInput.port == 10034 || commandlineInput.port == 8081)
    {
-	// port 10034 indicates xpt protocol (in future we will also add a -o URL prefix)
+	// port 10034/8081 indicates xpt protocol (in future we will also add a -o URL prefix)
 	workData.protocolMode = MINER_PROTOCOL_XPUSHTHROUGH;
 		std::cout << "Using x.pushthrough protocol" << std::endl;
    }
@@ -1691,7 +1691,7 @@ int main(int argc, char **argv)
       printf("Warning: \n");
       printf("   GetWork() is outdated and inefficient. You are losing mining performance\n");
       printf("   by using it. If the pool supports it, consider switching to x.pushthrough.\n");
-      printf("   Just add the port :10034 to the -o parameter.\n");
+      printf("   Just add the port :10034 or 8081 to the -o parameter.\n");
       printf("   Example: jhPrimeminer.exe -o http://poolurl.net:10034 ...\n");
    }
 		// initial query new work / create new connection
